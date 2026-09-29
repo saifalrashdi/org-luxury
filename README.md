@@ -69,12 +69,18 @@ shipping fees (15 / 30 / 80 AED).
    - `WHATSAPP_NUMBER` — digits only, international format, e.g. `9715XXXXXXX`
 4. Every push to the repo auto-deploys.
 
-> **Why Docker?** Render's native Node 22 builder can crash `npm install`
-> with `npm error Exit handler never called!` (a known npm/Node issue, not a
-> bug in this app). Building from the Dockerfile avoids it. If you prefer the
-> native Node runtime instead, set `runtime: node` in `render.yaml` with
-> `buildCommand: npm install -g npm@latest && npm ci --omit=dev` and
-> `startCommand: node server.js`, plus env var `NODE_VERSION=22`.
+> **Why Docker + pnpm?** npm itself crashes with
+> `npm error Exit handler never called!` on Node 22 inside hosted builders
+> (Render, Vercel, GitHub Actions — see npm/cli#8974), always ~70s into the
+> install, regardless of npm version. The `Dockerfile` therefore installs
+> dependencies with **pnpm** (via corepack — no npm involved), which is
+> unaffected. Node stays at 22 as required; better-sqlite3 uses its prebuilt
+> Node 22 binary.
+>
+> If the build ever still fails on Render's side, the guaranteed fallback is
+> Node 20 (confirmed unaffected by that npm bug, and better-sqlite3 11.10.0
+> ships Node 20 prebuilds too): change the first Dockerfile line to
+> `FROM node:20-slim`.
 
 > **Free-plan note:** Render's free tier has no persistent disk, so the SQLite
 > file and any uploaded product photos reset on each redeploy/restart. Orders
