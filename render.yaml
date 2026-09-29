@@ -1,16 +1,16 @@
 # Render Blueprint — free plan, auto-deploy on push to the connected GitHub repo.
 # Dashboard → New → Blueprint → pick the repo. That's it.
+#
+# NOTE: runtime is Docker on purpose. Render's native Node 22 builder can crash
+# `npm install` with "npm error Exit handler never called!" — building from the
+# included Dockerfile avoids that entirely.
 services:
   - type: web
     name: org-luxury
-    runtime: node
+    runtime: docker
     plan: free
-    buildCommand: npm install
-    startCommand: node server.js
     autoDeploy: true
     envVars:
-      - key: NODE_VERSION
-        value: 22
       # Set these in the Render dashboard (or fill values here before pushing):
       - key: ADMIN_USERNAME
         sync: false

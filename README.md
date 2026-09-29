@@ -57,16 +57,24 @@ shipping fees (15 / 30 / 80 AED).
 
 ## Deploy to Render (free plan, auto-deploy on push)
 
-1. Push this folder to a GitHub repository.
+1. Push this folder to a GitHub repository (make sure `node_modules/` and
+   `data/` are NOT committed — they are in `.gitignore`).
 2. Render dashboard → **New → Blueprint** → connect the repo. Render reads
-   `render.yaml` and provisions the web service (free plan, Node 22 via
-   `engines` + `NODE_VERSION`).
+   `render.yaml` and provisions the web service (free plan, **Docker runtime**
+   using the included `Dockerfile` — Node 22, `npm ci --omit=dev`).
 3. In the service's **Environment** tab, set:
    - `ADMIN_PASSWORD` — change it from the default!
    - `ADMIN_USERNAME` (optional, default `admin`)
    - `SESSION_SECRET` — any long random string (recommended)
    - `WHATSAPP_NUMBER` — digits only, international format, e.g. `9715XXXXXXX`
 4. Every push to the repo auto-deploys.
+
+> **Why Docker?** Render's native Node 22 builder can crash `npm install`
+> with `npm error Exit handler never called!` (a known npm/Node issue, not a
+> bug in this app). Building from the Dockerfile avoids it. If you prefer the
+> native Node runtime instead, set `runtime: node` in `render.yaml` with
+> `buildCommand: npm install -g npm@latest && npm ci --omit=dev` and
+> `startCommand: node server.js`, plus env var `NODE_VERSION=22`.
 
 > **Free-plan note:** Render's free tier has no persistent disk, so the SQLite
 > file and any uploaded product photos reset on each redeploy/restart. Orders
