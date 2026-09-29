@@ -1,0 +1,22 @@
+# Render Blueprint — free plan, auto-deploy on push to the connected GitHub repo.
+# Dashboard → New → Blueprint → pick the repo. That's it.
+services:
+  - type: web
+    name: org-luxury
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      # Set these in the Render dashboard (or fill values here before pushing):
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: WHATSAPP_NUMBER
+        sync: false
